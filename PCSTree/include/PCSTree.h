@@ -5,7 +5,7 @@
 #ifndef PCSTREE_H
 #define PCSTREE_H
 
-
+#include <openssl/sha.h>
 
 namespace Azul
 {
@@ -57,6 +57,9 @@ namespace Azul
 		void GetInfo(Info &info);
 		void Print() const;
 		void PrintTree(PCSNode* root) const;
+
+		//OpenSSL related
+		int check_sha1(PCSNode* curr, PCSNode* prev);
 
 	private:
 

@@ -5,13 +5,27 @@
 #ifndef PCSNODE_H
 #define PCSNODE_H
 
+#include <openssl/sha.h>
+
+
+//struct node {
+//	struct node** children;
+//	struct node* next;
+//	int height;
+//	int type;
+//	int num_children;
+//	fingerprint fp;
+//};
+//typedef struct node node;
+
 namespace Azul
 {
 	class PCSNode
 	{
 	public:
 		// Constants for the library
-		static const unsigned int NAME_SIZE = 32;
+		static const unsigned int FP_SIZE = 20;
+		static const unsigned int NAME_SIZE = 20;
 		static const unsigned int MAJOR_VERSION = 3;
 		static const unsigned int MINOR_VERSION = 1;
 
@@ -63,7 +77,8 @@ namespace Azul
 		PCSNode *GetReverse(void) const;
 
 		// name
-		Code SetName(const char *const pInName);
+		Code SetFP(const unsigned char *const pInFP);
+		Code SetName(const char* const pInName);
 		Code GetName(char *const pOutBuffer, unsigned int sizeOutBuffer) const;
 
 		// print
@@ -75,6 +90,10 @@ namespace Azul
 		int GetNumSiblings() const;
 		int GetNumChildren() const;
 
+
+		//public data, for convience
+		unsigned char     fingerprint[PCSNode::FP_SIZE];
+
 	private:
 		PCSNode *pParent;
 		PCSNode *pChild;
@@ -83,7 +102,8 @@ namespace Azul
 		PCSNode *pForward;
 		PCSNode *pReverse;
 
-		char     pName[PCSNode::NAME_SIZE];
+		
+		char* pName;
 	};
 
 }

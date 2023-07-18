@@ -5,6 +5,8 @@
 #include "PCSTree.h"
 #include "PCSNode.h"
 
+
+
 namespace Azul
 {
 	// constructor
@@ -27,7 +29,7 @@ namespace Azul
 		this->pPrevSibling = in.pPrevSibling;
 		this->pForward = in.pForward;
 		this->pReverse = in.pReverse;
-		memcpy_s(this->pName, NAME_SIZE, in.pName, NAME_SIZE);
+		memcpy_s(this->fingerprint, FP_SIZE, in.fingerprint, FP_SIZE);
 	}
 
 	// Specialize Constructor
@@ -37,7 +39,7 @@ namespace Azul
 		this->pChild = pInChild;
 		this->pNextSibling = pInNextSibling;
 		this->pPrevSibling = pInPrevSibling;
-		memcpy_s(this->pName, NAME_SIZE, pInName, NAME_SIZE);
+		memcpy_s(this->fingerprint, FP_SIZE, pInName, FP_SIZE);
 	}
 
 	PCSNode::PCSNode(const char * const pInName)
@@ -48,7 +50,7 @@ namespace Azul
 		pForward(nullptr),
 		pReverse(nullptr)
 	{
-		memcpy_s(this->pName, NAME_SIZE, pInName, NAME_SIZE);
+		memcpy_s(this->fingerprint, FP_SIZE, pInName, FP_SIZE);
 	}
 
 	// destructor
@@ -66,7 +68,7 @@ namespace Azul
 		this->pPrevSibling = in.pPrevSibling;
 		this->pForward = in.pForward;
 		this->pReverse = in.pReverse;
-		memcpy_s(this->pName, NAME_SIZE, in.pName, NAME_SIZE);
+		memcpy_s(this->fingerprint, FP_SIZE, in.fingerprint, FP_SIZE);
 		return *this;
 	}
 
@@ -131,7 +133,20 @@ namespace Azul
 		return this->pReverse;
 	}
 
-	PCSNode::Code PCSNode::SetName(const char * const pInName)
+	PCSNode::Code PCSNode::SetFP(const unsigned char * const pInFP)
+	{
+		if (pInFP == nullptr)
+		{
+			return Code::FAIL_NULL_PTR;
+		}
+		else
+		{
+			memcpy_s(this->fingerprint, FP_SIZE, pInFP, FP_SIZE);
+			return Code::SUCCESS;
+		}
+	}
+
+	PCSNode::Code PCSNode::SetName(const char* const pInName)
 	{
 		if (pInName == nullptr)
 		{
@@ -139,14 +154,14 @@ namespace Azul
 		}
 		else
 		{
-			memcpy_s(this->pName, NAME_SIZE, pInName, NAME_SIZE);
+			memcpy_s(this->pName, FP_SIZE, pInName, FP_SIZE);
 			return Code::SUCCESS;
 		}
 	}
 
 	PCSNode::Code PCSNode::GetName(char * const pOutBuffer, unsigned int sizeOutBuffer) const
 	{
-		if (this->pName == nullptr)
+		if (this->fingerprint == nullptr)
 		{
 			return Code::FAIL_RETURN_NOT_INITIALIZED;
 		}
@@ -156,7 +171,7 @@ namespace Azul
 		}
 		else
 		{
-			memcpy_s(pOutBuffer, sizeOutBuffer, this->pName, sizeOutBuffer);
+			memcpy_s(pOutBuffer, sizeOutBuffer, this->fingerprint, sizeOutBuffer);
 			/*for (size_t i = 0; i < sizeOutBuffer; i++)
 			{
 				pOutBuffer[i] = this->pName[i];
@@ -168,14 +183,14 @@ namespace Azul
 
 	void PCSNode::PrintNode() const
 	{
-		Trace::out("Node Name:      %s(%p)\n", this->pName, this);
+		Trace::out("Node Name:      %s(%p)\n", this->fingerprint, this);
 		if (this->pParent == nullptr)
 		{
 			Trace::out("Node Parent:    %s(%p)\n", "NONE", this->pParent);
 		}
 		else
 		{
-			Trace::out("Node Parent:    %s(%p)\n", this->pParent->pName, this->pParent);
+			Trace::out("Node Parent:    %s(%p)\n", this->pParent->fingerprint, this->pParent);
 		}
 
 		if (this->pChild == nullptr)
@@ -184,7 +199,7 @@ namespace Azul
 		}
 		else
 		{
-			Trace::out("Node 1st Child: %s(%p)\n", this->pChild->pName, this->pChild);
+			Trace::out("Node 1st Child: %s(%p)\n", this->pChild->fingerprint, this->pChild);
 		}
 
 		if (this->pPrevSibling == nullptr)
@@ -193,7 +208,7 @@ namespace Azul
 		}
 		else
 		{
-			Trace::out("Prev Sibling:   %s(%p)\n", this->pPrevSibling->pName, this->pPrevSibling);
+			Trace::out("Prev Sibling:   %s(%p)\n", this->pPrevSibling->fingerprint, this->pPrevSibling);
 		}
 
 		if (this->pNextSibling == nullptr)
@@ -202,7 +217,7 @@ namespace Azul
 		}
 		else
 		{
-			Trace::out("Next Sibling:   %s(%p)\n\n", this->pNextSibling->pName, this->pNextSibling);
+			Trace::out("Next Sibling:   %s(%p)\n\n", this->pNextSibling->fingerprint, this->pNextSibling);
 		}
 	}
 
@@ -212,7 +227,7 @@ namespace Azul
 		Trace::out("Child List: ");
 		while (iter != nullptr)
 		{
-			Trace::out("%s(%p) ", iter->pName, iter);
+			Trace::out("%s(%p) ", iter->fingerprint, iter);
 			iter = iter->pNextSibling;
 		}
 		Trace::out("\n");
@@ -223,7 +238,7 @@ namespace Azul
 		PCSNode* iter = this->pParent->GetChild();
 		while (iter != nullptr)
 		{
-			Trace::out("%s(%p) ", iter->pName, iter);
+			Trace::out("%s(%p) ", iter->fingerprint, iter);
 			iter = iter->pNextSibling;
 		}
 		Trace::out("\n");

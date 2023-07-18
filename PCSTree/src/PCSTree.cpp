@@ -7,6 +7,9 @@
 #include"PCSTreeForwardIterator.h"
 #include"PCSTreeReverseIterator.h"
 
+#define getbit(from, which) ((from >> which) & 0x01) 
+#pragma warning(disable : 4996)		// not going to replace SHA1 to SHA256 or SHA512
+
 namespace Azul
 {
 
@@ -319,6 +322,26 @@ namespace Azul
 			PrintTree(iter);
 			iter = iter->GetNextSibling();
 		}
+	}
+
+	int PCSTree::check_sha1(PCSNode* curr, PCSNode* prev)
+	{
+		SHA_CTX ctx;
+		SHA1_Init(&ctx);
+		unsigned char fp[PCSNode::FP_SIZE];
+
+		SHA1_Update(&ctx, curr->fingerprint, 20);
+		if (prev) {
+			SHA1_Update(&ctx, prev->fingerprint, 20);
+			SHA1_Final(fp, &ctx);
+			unsigned char b = fp[19];
+			if (!getbit(b, 0) && !getbit(b, 1)) {
+				return 1;
+			}
+		}
+		else {
+		}
+		return 0;
 	}
 
 }
